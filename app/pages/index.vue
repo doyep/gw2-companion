@@ -1,27 +1,22 @@
 <script setup lang="ts">
-const runtimeConfig = useRuntimeConfig();
-const gw2ApiKey = ref(runtimeConfig.public.gw2ApiKey);
-const data = ref();
+import type { AccountDto } from '#shared/types/gw2';
 
-async function fetchData() {
-  const { data: result } = await useFetch(
-    'https://api.guildwars2.com/v2/account',
-    {
-      headers: {
-        Authorization: `Bearer ${gw2ApiKey.value}`,
-      }
-    }
-  );
+const { clear: clearSession } = useUserSession();
 
-  data.value = result.value;
+async function logout() {
+  await clearSession();
+  await navigateTo("/login");
 }
+
+const { data: account } = await useFetch<AccountDto>("/api/account");
 </script>
 
 <template>
-  <input v-model="gw2ApiKey" />
-  <button @click="fetchData()">fetch</button>
-
-  <pre v-if="data">
-    {{ data }}
+  <h1>INDEX</h1>
+  <p>
+    <button @click="logout()">LOGOUT</button>
+  </p>
+  <pre>
+    {{ account }}
   </pre>
 </template>
